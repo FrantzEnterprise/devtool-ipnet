@@ -1,0 +1,345 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>IP Network Toolkit — Frantz DevTool Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#282a36;--bg2:#21222c;--surface:#44475a;--surface2:#383a4a;--text:#f8f8f2;--text2:#bd93f9;--muted:#6272a4;
+--accent:#bd93f9;--accent2:#ff79c6;--green:#50fa7b;--orange:#ffb86c;--red:#ff5555;--cyan:#8be9fd;--gold:#f1fa8c;
+--border:#44475a;--radius:10px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:44px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;justify-content:space-between}
+.top-nav .brand{font-weight:700;font-size:.8rem;display:flex;align-items:center;gap:6px}
+.top-nav .brand span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-nav .links{display:flex;gap:3px;align-items:center}
+.top-nav .links a{padding:4px 7px;border-radius:5px;font-size:.6rem;color:var(--muted);text-decoration:none}
+.top-nav .links a:hover{color:var(--text);background:var(--surface)}
+.top-nav .tier-badge{padding:2px 9px;border-radius:10px;font-size:.55rem;font-weight:600;background:#50fa7b20;color:var(--green);cursor:pointer}
+.main{padding-top:44px;max-width:880px;margin:0 auto;padding-left:12px;padding-right:12px}
+.hero{text-align:center;padding:20px 0 10px}
+.hero h1{font-size:1.3rem;margin-bottom:2px}
+.hero p{color:var(--muted);font-size:.72rem}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px}
+.card-title{font-weight:600;font-size:.78rem;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:8px}
+.tab-btn{padding:5px 12px;font-size:.65rem;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.form-row{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:6px}
+.form-group{flex:1;min-width:120px}
+.form-group label{display:block;font-size:.55rem;color:var(--muted);margin-bottom:2px;font-weight:500}
+.form-group input,.form-group select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:5px;font-size:.68rem;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 8px;border-radius:5px;font-family:var(--mono);font-size:.65rem;outline:none;resize:vertical;min-height:36px}
+textarea:focus{border-color:var(--accent)}
+.action-bar{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0}
+.action-bar .right{margin-left:auto;display:flex;gap:4px}
+.btn{padding:5px 12px;border-radius:6px;border:none;font-size:.65rem;font-weight:600;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg)}.btn-primary:hover{opacity:.85}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--accent)}
+.btn-sm{padding:3px 8px;font-size:.6rem}
+.output-box{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:.68rem;line-height:1.7;min-height:40px;margin-top:6px}
+.output-box .label{color:var(--muted);font-size:.55rem;display:block;font-family:var(--font)}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:6px}
+.result-card{background:var(--surface);border-radius:6px;padding:6px 8px;text-align:center}
+.result-card .val{font-size:.85rem;font-weight:600;color:var(--accent);font-family:var(--mono)}
+.result-card .lbl{font-size:.55rem;color:var(--muted)}
+.result-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:.68rem}
+.result-row:last-child{border:none}
+.result-row .k{color:var(--muted);font-family:var(--font)}
+.result-row .v{color:var(--text);font-family:var(--mono);text-align:right;max-width:60%;word-break:break-all}
+.preset-grid{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.preset-btn{padding:3px 9px;border-radius:5px;font-size:.6rem;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer}
+.preset-btn:hover{border-color:var(--accent)}
+.port-scan{max-height:220px;overflow-y:auto;font-family:var(--mono);font-size:.6rem}
+.port-scan .open{color:var(--green)}
+.port-scan .closed{color:var(--red)}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);padding:8px 16px;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);font-size:.7rem;z-index:200;display:none}
+footer{text-align:center;padding:20px 12px;font-size:.65rem;color:var(--muted);border-top:1px solid var(--border);margin-top:24px}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){.result-grid{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body>
+<nav class="top-nav">
+<div class="brand">🌐 <span>DevTools</span> <span style="font-weight:400;color:var(--muted);font-size:.6rem">/ IP Network</span></div>
+<div class="links"><span class="tier-badge" id="tBadge" onclick="cycleTier()">🆓 Free</span>
+<a href="https://frantzenterprise.github.io/devtool-suite/">Suite</a>
+<a href="https://frantzenterprise.github.io/devtool-gitbuilder/">Git</a>
+<a href="https://frantzenterprise.github.io/devtool-animstudio/">Anim</a>
+<a href="https://frantzenterprise.github.io/devtool-jsoncsv/">CSV</a>
+</div></nav>
+<div class="main">
+<div class="hero"><h1>🌐 IP Network Toolkit</h1><p>Subnet calculator, DNS lookup, WHOIS, and port scanner — all client-side.</p></div>
+
+<div class="tab-bar">
+<button class="tab-btn active" onclick="switchTab('subnet')">📐 Subnet</button>
+<button class="tab-btn" onclick="switchTab('dns')">🔍 DNS</button>
+<button class="tab-btn" onclick="switchTab('whois')">📇 WHOIS</button>
+<button class="tab-btn" onclick="switchTab('ports')">🔌 Ports</button>
+</div>
+
+<!-- SUBNET -->
+<div class="tab-panel active" id="tab-subnet">
+<div class="card">
+<div class="card-title">📐 Subnet Calculator</div>
+<div class="preset-grid" id="subnetPresets"></div>
+<div class="form-row">
+<div class="form-group"><label>IP Address</label><input type="text" id="subnetIP" value="192.168.1.0" oninput="calcSubnet()" placeholder="192.168.1.0"></div>
+<div class="form-group"><label>CIDR Prefix</label><input type="number" id="subnetCIDR" value="24" min="0" max="32" oninput="calcSubnet()"></div>
+</div>
+<div class="output-box"><span class="label">Results</span><div id="subnetResults"></div></div>
+<div class="action-bar">
+<button class="btn btn-secondary btn-sm" onclick="copySubnet()">📋 Copy</button>
+</div>
+</div>
+</div>
+
+<!-- DNS -->
+<div class="tab-panel" id="tab-dns">
+<div class="card">
+<div class="card-title">🔍 DNS Lookup</div>
+<div class="preset-grid" id="dnsPresets"></div>
+<div class="form-row">
+<div class="form-group"><label>Hostname</label><input type="text" id="dnsHost" value="google.com" onkeydown="if(event.key==='Enter')dnsLookup()" placeholder="example.com"></div>
+<div class="form-group"><label>Record Type</label><select id="dnsType" onchange="dnsLookup()"><option value="A">A</option><option value="AAAA">AAAA</option><option value="MX">MX</option><option value="NS">NS</option><option value="CNAME">CNAME</option><option value="TXT">TXT</option><option value="SOA">SOA</option></select></div>
+<button class="btn btn-primary btn-sm" onclick="dnsLookup()" style="align-self:end">🔍 Lookup</button>
+</div>
+<div class="output-box"><span class="label">DNS Results</span><div id="dnsResults"><span style="color:var(--muted)">Click Lookup to resolve</span></div></div>
+</div>
+</div>
+
+<!-- WHOIS -->
+<div class="tab-panel" id="tab-whois">
+<div class="card">
+<div class="card-title">📇 WHOIS Lookup</div>
+<div class="preset-grid" id="whoisPresets"></div>
+<div class="form-row">
+<div class="form-group"><label>Domain or IP</label><input type="text" id="whoisQuery" value="frantzenterprise.github.io" onkeydown="if(event.key==='Enter')whoisLookup()" placeholder="example.com"></div>
+<button class="btn btn-primary btn-sm" onclick="whoisLookup()" style="align-self:end">🔍 Lookup</button>
+</div>
+<div class="output-box"><span class="label">WHOIS Data</span><div id="whoisResults"><span style="color:var(--muted)">Click Lookup to query</span></div></div>
+</div>
+</div>
+
+<!-- PORTS -->
+<div class="tab-panel" id="tab-ports">
+<div class="card">
+<div class="card-title">🔌 Port Scanner</div>
+<div class="preset-grid" id="portPresets"></div>
+<div class="form-row">
+<div class="form-group"><label>Host</label><input type="text" id="portHost" value="scanme.nmap.org" placeholder="host or IP"></div>
+<div class="form-group"><label>Ports</label><input type="text" id="portRange" value="22,80,443,8080" placeholder="22,80,443 or 1-1000"></div>
+<button class="btn btn-primary btn-sm" onclick="scanPorts()" style="align-self:end">🔌 Scan</button>
+</div>
+<div class="output-box"><span class="label">Port Scan Results</span><div id="portResults"><span style="color:var(--muted)">Click Scan to check ports</span></div></div>
+</div>
+</div>
+</div>
+
+<footer><a href="https://frantzenterprise.github.io/devtool-suite/">DevTool Suite</a> · IP Network Toolkit · ⚡ Powered by Frantz Enterprise</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const state={tier:'free'}
+const SUBNET_PRESETS=[{n:'/24 (C)',v:'24'},{n:'/16 (B)',v:'16'},{n:'/8 (A)',v:'8'},{n:'/27',v:'27'},{n:'/28',v:'28'},{n:'/30',v:'30'}]
+const DNS_PRESETS=[{n:'google.com',v:'google.com'},{n:'github.com',v:'github.com'},{n:'cloudflare.com',v:'cloudflare.com'},{n:'openai.com',v:'openai.com'}]
+const WHOIS_PRESETS=[{n:'google.com',v:'google.com'},{n:'github.com',v:'github.com'},{n:'wikipedia.org',v:'wikipedia.org'}]
+const PORT_PRESETS=[{n:'Common',v:'22,80,443,8080'},{n:'Web',v:'80,443,3000,8080,8443'},{n:'Mail',v:'25,110,143,587,993,995'},{n:'DB',v:'3306,5432,6379,27017'},{n:'Range 1-50',v:'1-50'},{n:'Range 1-100',v:'1-100'}]
+
+function init(){
+document.getElementById('subnetPresets').innerHTML=SUBNET_PRESETS.map(p=>`<button class="preset-btn" onclick="document.getElementById('subnetCIDR').value='${p.v}';calcSubnet()">${p.n}</button>`).join('')
+document.getElementById('dnsPresets').innerHTML=DNS_PRESETS.map(p=>`<button class="preset-btn" onclick="document.getElementById('dnsHost').value='${p.v}';dnsLookup()">${p.n}</button>`).join('')
+document.getElementById('whoisPresets').innerHTML=WHOIS_PRESETS.map(p=>`<button class="preset-btn" onclick="document.getElementById('whoisQuery').value='${p.v}';whoisLookup()">${p.n}</button>`).join('')
+document.getElementById('portPresets').innerHTML=PORT_PRESETS.map(p=>`<button class="preset-btn" onclick="document.getElementById('portRange').value='${p.v}';scanPorts()">${p.n}</button>`).join('')
+calcSubnet()
+}
+
+function switchTab(n){
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().includes(n)))
+document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+n))
+}
+
+// SUBNET
+function calcSubnet(){
+const ip=document.getElementById('subnetIP').value.trim()
+const cidr=parseInt(document.getElementById('subnetCIDR').value)
+if(!ip||isNaN(cidr)||cidr<0||cidr>32){
+document.getElementById('subnetResults').innerHTML='<span style="color:var(--red)">Invalid input</span>';return
+}
+const parts=ip.split('.').map(n=>parseInt(n)||0)
+if(parts.length!==4||parts.some(n=>n<0||n>255)){
+document.getElementById('subnetResults').innerHTML='<span style="color:var(--red)">Invalid IP address</span>';return
+}
+const ipInt=(parts[0]<<24)+(parts[1]<<16)+(parts[2]<<8)+parts[3]
+const mask=~0<<(32-cidr)
+const network=ipInt&mask
+const broadcast=network|~mask
+const firstHost=network+1
+const lastHost=broadcast-1
+const totalHosts=Math.pow(2,32-cidr)
+const usable=totalHosts-2
+
+const fmt=i=>[(i>>>24),(i>>16)&255,(i>>8)&255,i&255].join('.')
+const bin=i=>[(i>>>24),(i>>16)&255,(i>>8)&255,i&255].map(n=>n.toString(2).padStart(8,'0')).join('.')
+
+document.getElementById('subnetResults').innerHTML=`
+<div class="result-grid">
+<div class="result-card"><div class="val">${fmt(network)}</div><div class="lbl">Network</div></div>
+<div class="result-card"><div class="val">${cidr}</div><div class="lbl">CIDR</div></div>
+<div class="result-card"><div class="val">${fmt(mask)}</div><div class="lbl">Subnet Mask</div></div>
+<div class="result-card"><div class="val">${fmt(broadcast)}</div><div class="lbl">Broadcast</div></div>
+<div class="result-card"><div class="val">${fmt(firstHost)}</div><div class="lbl">First Host</div></div>
+<div class="result-card"><div class="val">${fmt(lastHost)}</div><div class="lbl">Last Host</div></div>
+<div class="result-card"><div class="val">${usable}</div><div class="lbl">Usable Hosts</div></div>
+<div class="result-card"><div class="val" style="font-size:.55rem">${bin(mask)}</div><div class="lbl">Binary Mask</div></div>
+</div>`
+}
+
+function copySubnet(){
+const ip=document.getElementById('subnetIP').value
+const cidr=document.getElementById('subnetCIDR').value
+const el=document.getElementById('subnetResults')
+const txt=ip+'/'+cidr+'\n'+el.textContent.replace(/\s+/g,' ').trim()
+navigator.clipboard.writeText(txt).then(()=>showToast('📋 Copied'))
+}
+
+// DNS
+async function dnsLookup(){
+const host=document.getElementById('dnsHost').value.trim()
+const type=document.getElementById('dnsType').value
+if(!host){document.getElementById('dnsResults').innerHTML='<span style="color:var(--red)">Enter a hostname</span>';return}
+document.getElementById('dnsResults').innerHTML='<span style="color:var(--muted)">Resolving...</span>'
+try{
+const url=`https://dns.google/resolve?name=${encodeURIComponent(host)}&type=${type}`
+const r=await fetch(url)
+const d=await r.json()
+if(!d.Answer||d.Answer.length===0){
+document.getElementById('dnsResults').innerHTML=`<span style="color:var(--orange)">No ${type} records found for ${host}</span>`
+return
+}
+let html=''
+d.Answer.forEach(a=>{
+html+=`<div class="result-row"><span class="k">${a.type}</span><span class="v">${a.data||a.rdata}</span></div>`
+})
+document.getElementById('dnsResults').innerHTML=html
+showToast(`✅ ${d.Answer.length} record(s) found`)
+}catch(e){
+document.getElementById('dnsResults').innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`
+}
+}
+
+// WHOIS
+async function whoisLookup(){
+const q=document.getElementById('whoisQuery').value.trim()
+if(!q){document.getElementById('whoisResults').innerHTML='<span style="color:var(--red)">Enter a domain or IP</span>';return}
+document.getElementById('whoisResults').innerHTML='<span style="color:var(--muted)">Looking up...</span>'
+try{
+const url=`https://whois.fdnd.nl/api/v1/whois/${encodeURIComponent(q)}`
+const r=await fetch(url,{headers:{'Accept':'application/json'}})
+const d=await r.json()
+// Render key fields
+const fields={
+'domainName':'Domain','registrarName':'Registrar','whoisServer':'WHOIS Server',
+'nameServers':'Name Servers','createdDate':'Created','updatedDate':'Updated','expirationDate':'Expires',
+'registrantOrganization':'Organization','registrantCountry':'Country','registrantEmail':'Email'
+}
+let html=''
+for(const [k,v] of Object.entries(fields)){
+const val=d[k]
+if(val){
+const display=Array.isArray(val)?val.join(', '):val
+html+=`<div class="result-row"><span class="k">${v}</span><span class="v">${display}</span></div>`
+}
+}
+if(!html)html=`<span style="color:var(--orange)">Limited WHOIS data for ${q}. Try a different domain.</span>`
+document.getElementById('whoisResults').innerHTML=html
+}catch(e){
+// Fallback: show basic data via rdap
+try{
+const r=await fetch(`https://rdap.org/domain/${encodeURIComponent(q)}`)
+const d=await r.json()
+let html=''
+if(d.events)html+=`<div class="result-row"><span class="k">Events</span><span class="v">${d.events.map(e=>e.eventAction+': '+e.eventDate.substring(0,10)).join(', ')}</span></div>`
+document.getElementById('whoisResults').innerHTML=html||`<span style="color:var(--orange)">No WHOIS data available</span>`
+}catch(e2){
+document.getElementById('whoisResults').innerHTML=`<span style="color:var(--red)">Could not fetch WHOIS data. ${e.message}</span>`
+}
+}
+}
+
+// PORTS
+async function scanPorts(){
+const host=document.getElementById('portHost').value.trim()
+const range=document.getElementById('portRange').value.trim()
+if(!host||!range){document.getElementById('portResults').innerHTML='<span style="color:var(--red)">Enter host and ports</span>';return}
+document.getElementById('portResults').innerHTML='<span style="color:var(--muted)">Scanning... (may take a moment)</span>'
+
+const ports=[]
+// Parse range
+range.split(',').forEach(part=>{
+part=part.trim()
+if(part.includes('-')){
+const [s,e]=part.split('-').map(Number)
+for(let i=Math.max(1,Math.min(s,e));i<=Math.max(s,e);i++)ports.push(i)
+}else{
+const n=parseInt(part);if(n&&n>0&&n<65536)ports.push(n)
+}
+})
+
+if(ports.length===0){document.getElementById('portResults').innerHTML='<span style="color:var(--red)">No valid ports</span>';return}
+if(ports.length>100){document.getElementById('portResults').innerHTML='<span style="color:var(--orange)">Max 100 ports per scan. Truncated.</span>';ports.length=100}
+
+const open=[]
+const closed=[]
+const batchSize=10
+for(let i=0;i<ports.length;i+=batchSize){
+const batch=ports.slice(i,i+batchSize)
+const results=await Promise.all(batch.map(p=>checkPort(host,p)))
+results.forEach((r,idx)=>{
+if(r)open.push(batch[idx]);else closed.push(batch[idx])
+})
+// Yield to UI
+await new Promise(r=>setTimeout(r,0))
+document.getElementById('portResults').innerHTML=`<span style="color:var(--muted)">Scanned ${Math.min(i+batchSize,ports.length)}/${ports.length} ports...</span>`
+}
+
+const knownPorts={22:'SSH',80:'HTTP',443:'HTTPS',8080:'HTTP-Alt',3306:'MySQL',5432:'PostgreSQL',6379:'Redis',27017:'MongoDB',25:'SMTP',110:'POP3',143:'IMAP',587:'SMTP-Submit',993:'IMAPS',995:'POP3S',53:'DNS',21:'FTP',3389:'RDP',8443:'HTTPS-Alt',3000:'Dev',5000:'Dev',8443:'HTTPS-Alt',5900:'VNC'}
+
+let html=''
+if(open.length>0){
+html+=`<div style="margin-bottom:6px;font-size:.65rem;color:var(--green)">✅ ${open.length} open:</div>`
+open.forEach(p=>{html+=`<div class="open">  ${p}/tcp  ${knownPorts[p]||''}</div>`})
+}
+if(closed.length>0){
+html+=`<div style="margin-top:6px;font-size:.65rem;color:var(--muted)">❌ ${closed.length} closed</div>`
+}
+document.getElementById('portResults').innerHTML=html||'<span style="color:var(--muted)">No results</span>'
+showToast(`🔌 Done: ${open.length} open, ${closed.length} closed`)
+}
+
+async function checkPort(host,port){
+return new Promise(resolve=>{
+const socket=new WebSocket(`ws://${host}:${port}`)
+const timer=setTimeout(()=>{socket.close();resolve(false)},2000)
+socket.onopen=()=>{clearTimeout(timer);socket.close();resolve(true)}
+socket.onerror=()=>{clearTimeout(timer);resolve(false)}
+})
+}
+
+function cycleTier(){
+const t=['free','pro','team'];const c=t.indexOf(state.tier);state.tier=t[(c+1)%t.length]
+const b=document.getElementById('tBadge')
+if(state.tier==='free'){b.textContent='🆓 Free';b.style.background='#50fa7b20';b.style.color='#50fa7b'}
+else if(state.tier==='pro'){b.textContent='⚡ Pro';b.style.background='#ff79c620';b.style.color='#ff79c6'}
+else{b.textContent='🏢 Team';b.style.background='#ffb86c20';b.style.color='#ffb86c'}
+showToast(state.tier==='free'?'🆓 Free':state.tier==='pro'?'⚡ Pro':'🏢 Team')
+}
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2500)}
+document.addEventListener('DOMContentLoaded',init)
+</script>
+</body>
+</html>
